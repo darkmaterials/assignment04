@@ -15,6 +15,8 @@ rm(list=ls())
 library(dplyr)
 library(tidyr)
 library(tidyverse)
+library(janitor)
+library(readxl)
 library(sampling)
 library(haven) 
 library(srvyr)
@@ -30,38 +32,19 @@ data <- read.csv("data/korea_waterdata.csv")
 
 You can add options to executable code like this
 
-#DATA CLEANING 
-```{r} 
-#Remove X's from variable names 
-for ( col in 1:ncol(data) ){
-    colnames(data)[col] <- sub("X", "", colnames(data)[col])
-}
+#DATA CLEANING
 
-for ( col in 1:ncol(data) ){
-    colnames(data)[col] <- sub("\\.", "_", colnames(data)[col])
-}
+```{r}
 
-data <- data %>%
-  rename_all(~ ifelse(grepl("_", .), ., paste0(., "_0")))
-
-# #Remove .* 
-# names(data) <- sub("\\.{1}\\d*$", "", names(data))
-
-data <- rename(data, Region = Year_0)
-
-#Pivot 
-data_tidy <- data %>% 
-  pivot_longer(
-    cols = !Region,
-    names_to = c("year", "measure_type"),
-    names_sep = "_",
-    values_to = "Value"
-  )
-
-
+# tidy data
+tidy_data <- data %>% 
+  janitor::clean_names() %>% 
+  mutate_all(~as.character(.)) %>% 
+  pivot_longer(-parameter) %>%
+  mutate(name = str_remove_all(name, "_[0-9].*")) %>% 
+  mutate(year = rep(rep(1996:2022, each = 7), 25))%>% 
+  pivot_wider(id_cols = c(year, parameter), names_from = name, values_from = value)
 
 ```
-
-
 
 #DATA VISUALIZATIONS
