@@ -18,6 +18,8 @@ library(readxl)
 library(dplyr)
 library(tidyr)
 library(tidyverse)
+library(janitor)
+library(readxl)
 library(sampling)
 library(haven) 
 library(srvyr)
@@ -29,6 +31,7 @@ library(ggplot2)
 ```
 
 
+<<<<<<< HEAD
 #DATA CLEANING 
 ```{r} 
 # #Remove X's from variable names 
@@ -112,11 +115,24 @@ quality_added_data <- org_data %>%
                        suspended_solid_ss_mg_l <= 999.0 &
                        coliform_bacteria_mpn <= 999999999.0 ~ "Bad")
 )
+=======
+#DATA CLEANING
+>>>>>>> 33d99e06bd52775546a1dd5d2c8040533e0b9faa
 
+```{r}
 
+# tidy data
+tidy_data <- data %>% 
+  janitor::clean_names() %>% 
+  mutate_all(~as.character(.)) %>% 
+  pivot_longer(-parameter) %>%
+  mutate(name = str_remove_all(name, "_[0-9].*")) %>% 
+  mutate(year = rep(rep(1996:2022, each = 7), 25))%>% 
+  pivot_wider(id_cols = c(year, parameter), names_from = name, values_from = value)
 
 ```
 
+<<<<<<< HEAD
 ```{r} 
 #Clean-up variable names 
 quality_added_data <- quality_added_data %>% 
@@ -124,6 +140,8 @@ quality_added_data <- quality_added_data %>%
 
 
 ```
+=======
+>>>>>>> 33d99e06bd52775546a1dd5d2c8040533e0b9faa
 #DATA VISUALIZATIONS
 ```{r} 
 # Graph 1: Average temperature
