@@ -11,7 +11,7 @@ execute:
 
 # DATA EXPLORATION
 
-The data source employed in the creation of the following visualisizations are the [Seoul City government water quality statistics](https://data.seoul.go.kr/dataList/342/S/2/datasetView.do) . We note that, where appropriate, Korean titles/words have been translated into English by Nam.
+The data source employed in the creation of the following visualisizations are the [Seoul City government water quality statistics](https://data.seoul.go.kr/dataList/342/S/2/datasetView.do) . We note that, where appropriate, Korean titles/words have been translated into English by Nam. The data includes several water indicators, for neighborhoods within Seoul, over the time period from 1996-2022. 
 
 ```{r}
 #| echo: false
@@ -36,6 +36,8 @@ library(ggplot2)
 ```
 
 # DATA CLEANING
+
+We begin by loading the data, transforming it from its initial form (with nearly 200 variables!) into 'tidy data' form, such that each observation is a year-neighborhood observation of 7 water quality measurements. We also assign/classify each of these observations into three grades of water quality: "Good", "Normal", and "Bad", based upon the WRMIS (Water Resource Management Information System of South Korea) Water Quality Criteria. 
 
 ```{r, results='hide', message=FALSE, warning=FALSE}
 # #Remove X's from variable names 
@@ -146,6 +148,10 @@ quality_added_data <- quality_added_data %>%
 
 # DATA VISUALIZATIONS
 
+## Graph 1: Water Temperature over Time 
+
+Our first visualization shows water temperature data that have been averaged over all (available) Seoul neighborhoods. This (represented by the blue line) indicates a high degree of variance over time, ranging from a low of ~14.2C in 1996 to a high of ~16.3C in 2001. However, the red dashed line, which is a smoothed trend line generated using the "geom_smooth()" geometry, reveals that underneath this temporal variation lies a small increase average water temperature, from ~15.2C in 1996 to 15.5C in 2022. Given the dispersion/overlap in this smoothing estimate however (grey area), it is not clear whether this increase is statistically significant. In future, a comparison with air temperature trends (in the same neighborhoods) could be a good way of validating the measurements. 
+
 ```{r, results='hide', message=FALSE, warning=FALSE}
 # Graph 1: Average temperature
 
@@ -211,6 +217,10 @@ ggplot(data = temp_data) +
 
 ```
 
+## Graph 2: Trends in Water Quality over Time 
+
+We construct a record of the changes in the proportions of 3 kinds of water quality (Bad, Normal, Good) over time. It should be noted that we removed all "NA" designations, which could arise through either: a) the fact that the number of neighborhoods measured increased significantly over the time period of this dataset, such that new neighbhorhoods have 'NA' data in earlier years prior to their creation, or b) the fact that the Quality criteria are not mutually exclusive. Ideally, we could have created an index, weighing and aggregating the 7 different quality measures. However, we were not able to do this, owing to time constraints, and the subjectivity of creating such an index. These factors notwithstanding, our quality measure indicates that Seoul water is overwhelmingly of 'Bad' quality - with some small improvement over time, reflected in larger numbers of 'Normal' and 'Good' neighborhoods over the period 2000-2022. 
+
 ```{r, results='hide', message=FALSE, warning=FALSE}
 # Graph 2: Quality Proportions
 
@@ -247,6 +257,11 @@ ggplot(data = temp2_data) +
 #     theme(plot.subtitle = element_text(size = 6))
 ```
 
+
+## Graph 3: Correlation between Biochemical and Chemical Oxygen Demand 
+
+We observe a positive relationship between biochemical oxygen demand (BOD), and chemical oxygen demand, measured in mg/L. The former, 
+
 ```{r, results='hide', message=FALSE, warning=FALSE}
 # Graph 3: Correlation between biochemical_oxygen_demand & chemical oxygen demand
 
@@ -262,6 +277,9 @@ ggplot(data = quality_added_data) +
   theme(plot.subtitle = element_text(size = 7))
 ```
 
+
+
+## Graph 4: Disaggregation by Neighborhood of Suspended Solid and Coliform Bacteria Content from 1996-2022 
 
 ```{r, results='hide', message=FALSE, warning=FALSE}
 #Graph 4: 
