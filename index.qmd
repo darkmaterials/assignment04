@@ -2,7 +2,8 @@
 title: "index.qmd"
 format: html
 author: 
-  -name: Young Ju Nam, Serenity Fan 
+  - Young Ju Nam
+  - Serenity Fan 
 editor: visual
 execute:
       warning: false
@@ -10,7 +11,7 @@ execute:
 
 # DATA EXPLORATION
 
-The data source employed in the creation of the following visualisizations is https://data.seoul.go.kr/dataList/342/S/2/datasetView.do . We note that where appropriate, Korean titles/words have been translated into English by Nam.
+The data source employed in the creation of the following visualisizations are the [Seoul City government water quality statistics](https://data.seoul.go.kr/dataList/342/S/2/datasetView.do) . We note that, where appropriate, Korean titles/words have been translated into English by Nam.
 
 ```{r}
 #| echo: false
@@ -123,14 +124,14 @@ quality_added_data <- org_data %>%
 
 
 
-# tidy data
-tidy_data <- data %>% 
-  janitor::clean_names() %>% 
-  mutate_all(~as.character(.)) %>% 
-  pivot_longer(-parameter) %>%
-  mutate(name = str_remove_all(name, "_[0-9].*")) %>% 
-  mutate(year = rep(rep(1996:2022, each = 7), 25))%>% 
-  pivot_wider(id_cols = c(year, parameter), names_from = name, values_from = value)
+# # tidy data
+# tidy_data <- data %>% 
+#   janitor::clean_names() %>% 
+#   mutate_all(~as.character(.)) %>% 
+#   pivot_longer(-parameter) %>%
+#   mutate(name = str_remove_all(name, "_[0-9].*")) %>% 
+#   mutate(year = rep(rep(1996:2022, each = 7), 25))%>% 
+#   pivot_wider(id_cols = c(year, parameter), names_from = name, values_from = value)
 
 
 ```
@@ -166,47 +167,47 @@ ggplot(data = temp_data) +
     theme(plot.title = element_text(size = 10)) + 
     theme(plot.subtitle = element_text(size = 7))
 
-
-# Graph 2: Quality Proportions
-
-temp2_data <- quality_added_data %>% 
-group_by(year) %>%
-filter(!is.na(quality)) %>%
-count(quality) %>%
-mutate(p = n / sum(n))
-
-ggplot(data = temp2_data) +
-  aes(x = year, y = p, fill = quality) +
-  geom_col() +
-  labs(
-    title = "Proportions of Categorical Variable by Year",
-    subtitle = "1996-2022", 
-    x = "Year",
-    y = "Proportion"
-  )
-           
-
-# Graph 3: Correlation between biochemical_oxygen_demand & chemical oxygen demand
-
-ggplot(data = quality_added_data) +
-  geom_point(mapping = aes(x = biochemO2, y = chemO2)) + 
-  labs(
-    title = "Biochemical Oxygen Demand and Chemical Oxygen Demand",
-    subtitle = "1996-2002 Data",
-    x = "Biochemical Oxygen Demand [mg/L]",
-    y = "Chemical Oxygen Demand [mg/L]"
-  )
-
-# Graph 4: Correlation between potential of hydrogen & dissolved oxygen
-
-ggplot(data = quality_added_data) +
-  geom_point(mapping = aes(x = pH, y = dissO2)) + 
-  labs(
-    title = "Correlation between pH and Dissolved O2",
-    subtitle = "1996-2002 Data", 
-    x = "pH",
-    y = "Dissolved Oxygen Content [mg/L]"
-  )
+# 
+# # Graph 2: Quality Proportions
+# 
+# temp2_data <- quality_added_data %>% 
+# group_by(year) %>%
+# filter(!is.na(quality)) %>%
+# count(quality) %>%
+# mutate(p = n / sum(n))
+# 
+# ggplot(data = temp2_data) +
+#   aes(x = year, y = p, fill = quality) +
+#   geom_col() +
+#   labs(
+#     title = "Proportions of Categorical Variable by Year",
+#     subtitle = "1996-2022", 
+#     x = "Year",
+#     y = "Proportion"
+#   )
+#            
+# 
+# # Graph 3: Correlation between biochemical_oxygen_demand & chemical oxygen demand
+# 
+# ggplot(data = quality_added_data) +
+#   geom_point(mapping = aes(x = biochemO2, y = chemO2)) + 
+#   labs(
+#     title = "Biochemical Oxygen Demand and Chemical Oxygen Demand",
+#     subtitle = "1996-2002 Data",
+#     x = "Biochemical Oxygen Demand [mg/L]",
+#     y = "Chemical Oxygen Demand [mg/L]"
+#   )
+# 
+# # Graph 4: Correlation between potential of hydrogen & dissolved oxygen
+# 
+# ggplot(data = quality_added_data) +
+#   geom_point(mapping = aes(x = pH, y = dissO2)) + 
+#   labs(
+#     title = "Correlation between pH and Dissolved O2",
+#     subtitle = "1996-2002 Data", 
+#     x = "pH",
+#     y = "Dissolved Oxygen Content [mg/L]"
+#   )
 
 ```
 
@@ -261,22 +262,9 @@ ggplot(data = quality_added_data) +
   theme(plot.subtitle = element_text(size = 7))
 ```
 
-```{r, results='hide', message=FALSE, warning=FALSE}
-# Graph 4: Correlation between potential of hydrogen & dissolved oxygen
-
-# ggplot(data = quality_added_data) +
-#   geom_point(mapping = aes(x = pH, y = dissO2)) + 
-#   labs(
-#     title = "Correlation between pH and Dissolved O2",
-#     subtitle = "1996-2022 Data", 
-#     x = "pH",
-#     y = "Dissolved Oxygen Content [mg/L]"
-#   )
-
-```
 
 ```{r, results='hide', message=FALSE, warning=FALSE}
-#Graph 5: 
+#Graph 4: 
 
 ggplot(data = quality_added_data) + 
     geom_point(mapping = aes(x = ss, y = log(coli), color = region), size=1.5, alpha = 0.5) +
