@@ -1,12 +1,15 @@
 ---
 title: "index.qmd"
 format: html
+author: 
+  -name: Young Ju Nam, Serenity Fan 
 editor: visual
 execute:
       warning: false
 ---
-
-#DATA EXPLORATION
+ 
+# DATA EXPLORATION
+The data source employed in the creation of the following visualisizations is https://data.seoul.go.kr/dataList/342/S/2/datasetView.do . We note that where appropriate, Korean titles/words have been translated into English by Nam. 
 
 ```{r}
 #| echo: false
@@ -31,9 +34,8 @@ library(ggplot2)
 ```
 
 
-<<<<<<< HEAD
-#DATA CLEANING 
-```{r} 
+# DATA CLEANING 
+```{r, results='hide', message=FALSE, warning=FALSE} 
 # #Remove X's from variable names 
 # for ( col in 1:ncol(data) ){
 #     colnames(data)[col] <- sub("X", "", colnames(data)[col])
@@ -108,31 +110,16 @@ quality_added_data <- org_data %>%
                        chemical_oxygen_demand_cod_mg_l <= 7.0 &
                        suspended_solid_ss_mg_l <= 25.0 &
                        coliform_bacteria_mpn <= 5000.0 ~ "Normal",
-                       
+          
                        dissolved_oxygen_do_mg_l >= 2.0 &
-                       biochemical_oxygen_demand_bod_mg_l <= 10.0 &
-                       chemical_oxygen_demand_cod_mg_l <= 11 &
+                       biochemical_oxygen_demand_bod_mg_l <= 99.0 &
+                       chemical_oxygen_demand_cod_mg_l <= 99.0 &
                        suspended_solid_ss_mg_l <= 999.0 &
                        coliform_bacteria_mpn <= 999999999.0 ~ "Bad")
 )
-=======
-#DATA CLEANING
->>>>>>> 33d99e06bd52775546a1dd5d2c8040533e0b9faa
-
-```{r}
-
-# tidy data
-tidy_data <- data %>% 
-  janitor::clean_names() %>% 
-  mutate_all(~as.character(.)) %>% 
-  pivot_longer(-parameter) %>%
-  mutate(name = str_remove_all(name, "_[0-9].*")) %>% 
-  mutate(year = rep(rep(1996:2022, each = 7), 25))%>% 
-  pivot_wider(id_cols = c(year, parameter), names_from = name, values_from = value)
-
 ```
 
-<<<<<<< HEAD
+
 ```{r} 
 #Clean-up variable names 
 quality_added_data <- quality_added_data %>% 
@@ -140,10 +127,10 @@ quality_added_data <- quality_added_data %>%
 
 
 ```
-=======
->>>>>>> 33d99e06bd52775546a1dd5d2c8040533e0b9faa
-#DATA VISUALIZATIONS
-```{r} 
+
+# DATA VISUALIZATIONS
+
+```{r, results='hide', message=FALSE, warning=FALSE} 
 # Graph 1: Average temperature
 library(ggplot2)
 
@@ -152,50 +139,98 @@ temp_data <- quality_added_data %>%
   summarize(avg_temp = mean(water_temp, na.rm =TRUE))
 
 ggplot(data = temp_data) +
-  geom_line(mapping = aes(x = year, y = avg_temp)) + 
+  geom_line(mapping = aes(x = year, y = avg_temp), color = "blue") +
+  geom_smooth(mapping = aes(x = year, y = avg_temp), color = "red", linetype = "dashed") + 
   labs(
-    title = "Average Water Temperature over Seoul neighborhoods",
-    subtitle = "1996-2022",
+    title = "Average (Blue) and Smoothed (Red) Water Temperature over Seoul neighborhoods, 1996-2022",
+    subtitle = "Source: Water Resource Management Information System of South Korea (http://www.wamis.go.kr/wke/wke_wqbase_lst.do)",
     x = "Year",
     y = "Temperature (C)"
-  )
-
-# Graph 2: Quality Proportions
-ggplot(data = quality_added_data) +
-  geom_bar(aes(y = (..count..)/sum(..count..), x = year, fill = quality)) + 
-  labs(
-    title = "Proportions of Categorical Variable by Year",
-    subtitle = "1996-2022", 
-    x = "Year",
-    y = "Proportion",
-    fill = "Quality"
-  )
-           
-
-# Graph 3: Correlation between biochemical_oxygen_demand & chemical oxygen demand
-
-ggplot(data = quality_added_data) +
-  geom_point(mapping = aes(x = biochemO2, y = chemO2)) + 
-  labs(
-    title = "Biochemical Oxygen Demand and Chemical Oxygen Demand",
-    subtitle = "1996-2002 Data",
-    x = "Biochemical Oxygen Demand [mg/L]",
-    y = "Chemical Oxygen Demand [mg/L]"
-  )
-
-# Graph 4: Correlation between potential of hydrogen & dissolved oxygen
-
-ggplot(data = quality_added_data) +
-  geom_point(mapping = aes(x = pH, y = dissO2)) + 
-  labs(
-    title = "Correlation between pH and Dissolved O2",
-    subtitle = "1996-2002 Data", 
-    x = "pH",
-    y = "Dissolved Oxygen Content [mg/L]"
-  )
+  ) + 
+    theme(plot.title = element_text(size = 10)) + 
+    theme(plot.subtitle = element_text(size = 7))
 
 ```
 
-```{r} 
+```{r, results='hide', message=FALSE, warning=FALSE} 
+# Graph 2: Quality Proportions
+
+temp2_data <- quality_added_data %>% 
+  group_by(year) %>% 
+  filter(!is.na(quality)) %>% 
+  count(quality) %>% 
+  mutate(p = n/sum(n)) 
+
+ggplot(data = temp2_data) + 
+  aes(x = year, y = p, fill = quality) + 
+  geom_col() + 
+  labs(
+    title = "Proportions of Water Quality by Year, over Seoul Neighborhoods, 1996-2022",
+    subtitle = "Source: Water Resource Management Information
+    System of South Korea
+    (http://www.wamis.go.kr/wke/wke_wqbase_lst.do)",
+    x = "Year",
+    y = "Proportion of Measurements in Category",
+    fill = "Quality"
+  ) +
+    theme(plot.title = element_text(size = 12))
+    theme(plot.subtitle = element_text(size = 10))
+
+# ggplot(data = quality_added_data) +
+#   geom_bar(aes(y = (..count..)/sum(..count..), x = year, fill = quality)) + 
+#   labs(
+#     title = "Proportions of Categorical Variable by Year, 1996-2022",
+#     subtitle = "Source: Water Resource Management Information System of South Korea (http://www.wamis.go.kr/wke/wke_wqbase_lst.do)", 
+#     x = "Year",
+#     y = "Proportion",
+#     fill = "Quality"
+#   ) + 
+#     theme(plot.subtitle = element_text(size = 6))
+```
+
+```{r, results='hide', message=FALSE, warning=FALSE} 
+# Graph 3: Correlation between biochemical_oxygen_demand & chemical oxygen demand
+
+ggplot(data = quality_added_data) +
+  geom_point(mapping = aes(x = biochemO2, y = chemO2), color = "black", alpha = 0.3) + 
+  labs(
+    title = "Biochemical Oxygen Demand and Chemical Oxygen Demand, 1996-2022",
+    subtitle = "Source: Water Resource Management Information System of South Korea (http://www.wamis.go.kr/wke/wke_wqbase_lst.do)", 
+    x = "Biochemical Oxygen Demand [mg/L]",
+    y = "Chemical Oxygen Demand [mg/L]"
+  ) + 
+  theme_minimal() + 
+  theme(plot.subtitle = element_text(size = 7))
+```
+
+
+```{r, results='hide', message=FALSE, warning=FALSE} 
+# Graph 4: Correlation between potential of hydrogen & dissolved oxygen
+
+# ggplot(data = quality_added_data) +
+#   geom_point(mapping = aes(x = pH, y = dissO2)) + 
+#   labs(
+#     title = "Correlation between pH and Dissolved O2",
+#     subtitle = "1996-2022 Data", 
+#     x = "pH",
+#     y = "Dissolved Oxygen Content [mg/L]"
+#   )
+
+```
+
+```{r, results='hide', message=FALSE, warning=FALSE} 
+#Graph 5: 
+
+ggplot(data = quality_added_data) + 
+    geom_point(mapping = aes(x = ss, y = log(coli), color = region), size=1.5, alpha = 0.5) +
+     labs(
+      title = "Suspended Solids and Coliform Bacteria Concentration by Neighborhood, 1996-2022",
+      subtitle = "Source: Water Resource Management Information System of South Korea (http://www.wamis.go.kr/wke/wke_wqbase_lst.do)", 
+      x = "Suspended Solid Content [mg/L]",
+      y = "log(Coliform [MPN/100mL])"
+          ) +
+  theme(plot.title = element_text(size = 11)) + 
+  theme(plot.subtitle = element_text(size = 7))
+
 
 ```
