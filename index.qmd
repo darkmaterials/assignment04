@@ -166,7 +166,7 @@ ggplot(data = temp_data) +
   geom_smooth(mapping = aes(x = year, y = avg_temp), color = "red", linetype = "dashed") + 
   labs(
     title = "Average (Blue) and Smoothed (Red) Water Temperature over Seoul neighborhoods, 1996-2022",
-    subtitle = "Source: Water Resource Management Information System of South Korea (http://www.wamis.go.kr/wke/wke_wqbase_lst.do)",
+    subtitle = "Source: Water Resource Management Information System of South Korea (https://data.seoul.go.kr/dataList/342/S/2/datasetView.do)",
     x = "Year",
     y = "Temperature (C)"
   ) + 
@@ -237,7 +237,7 @@ ggplot(data = temp2_data) +
     title = "Proportions of Water Quality by Year, over Seoul Neighborhoods, 1996-2022",
     subtitle = "Source: Water Resource Management Information
     System of South Korea
-    (http://www.wamis.go.kr/wke/wke_wqbase_lst.do)",
+    (https://data.seoul.go.kr/dataList/342/S/2/datasetView.do)",
     x = "Year",
     y = "Proportion of Measurements in Category",
     fill = "Quality"
@@ -260,7 +260,8 @@ ggplot(data = temp2_data) +
 
 ## Graph 3: Correlation between Biochemical and Chemical Oxygen Demand 
 
-We observe a positive relationship between biochemical oxygen demand (BOD), and chemical oxygen demand, measured in mg/L. The former, 
+We observe a positive relationship between biochemical oxygen demand (BOD), and chemical oxygen demand, both measured in mg/L. In general, we observe a positive relationship between Suspended Solid and Coliform Bacteria content. We note that biochemical oxygen demand is the amount of oxygen consumed by biological organisms (bacteria and other microorganisms) in the process of the decomposition of organic matter under aerobic conditions. Hence, smaller BOD values are desirable. In contrast, chemical oxygen demand (COD) is the oxygen decomposed via non-biological processes, i.e. that required in breaking down organic matter via chemical oxidation. High COD levels indicate the discharge of wastewater into the environment, and constitute a form of pollution. Hence COD values should likewise ideally be low. It is implied that the COD 'levels' off, or increases at a decreasing rate, for larger values of BOD, e.g. BOD > 5 mg/L. However, there is a relative sparsity of measurements at these larger BOD values, so the full curve / functional form of the relationship is not particularly robust. Also, while there is correlation, it is unclear whether there is a causal relationship between the two variables. It may simply be that the two variables co-vary, for e.g. due to the presence of a factory spewing effluent in proximity to measurement stations. 
+
 
 ```{r, results='hide', message=FALSE, warning=FALSE}
 # Graph 3: Correlation between biochemical_oxygen_demand & chemical oxygen demand
@@ -269,7 +270,7 @@ ggplot(data = quality_added_data) +
   geom_point(mapping = aes(x = biochemO2, y = chemO2), color = "black", alpha = 0.3) + 
   labs(
     title = "Biochemical Oxygen Demand and Chemical Oxygen Demand, 1996-2022",
-    subtitle = "Source: Water Resource Management Information System of South Korea (http://www.wamis.go.kr/wke/wke_wqbase_lst.do)", 
+    subtitle = "Source: Water Resource Management Information System of South Korea (https://data.seoul.go.kr/dataList/342/S/2/datasetView.do)", 
     x = "Biochemical Oxygen Demand [mg/L]",
     y = "Chemical Oxygen Demand [mg/L]"
   ) + 
@@ -281,6 +282,8 @@ ggplot(data = quality_added_data) +
 
 ## Graph 4: Disaggregation by Neighborhood of Suspended Solid and Coliform Bacteria Content from 1996-2022 
 
+Suspended solids in water are important, because pollutants and pathogens may be situated upon the surface of these solids. Meanwhile, coliform bacteria are an indicator of fecal contamination (whether from humans or animals), and may spread diseases via the fecal-oral route, such as typhoid, cholera, polio, hepatitis, or diarroeal diseases. We log transform the colliform data (which is measured in MPM/100 mL, which is a statistical estimate of the number of coliform-group organisms per 100 mL of sample water), because it is distributed widely (by power of 10). We also do this, because of the presence of 1 outlier, on the order of 10^8 MPM/100 mL - linearly graphing the relationship would distort the graph because of this outlier. The resulting log transformed graph shows that for any given value of Suspended Solid concentration, log(colliform) varies substantially. Hence, while there appears to be a positive relationship, it is likely weak (in R^2 terms). The disaggregation by neighborhood (via color) indicates that the values (in SS vs. log(coliform) space) generally tend to cluster by neighborhood. For instance, the Bowang neighborhood measurements over the 1996-2022 timeframe cluster at ~3 mg/L Suspended Solid content, while varying from ~e^2 (~7 MPM/100mL) to ~e^7 (~1100 MPM/100mL). 
+
 ```{r, results='hide', message=FALSE, warning=FALSE}
 #Graph 4: 
 
@@ -288,7 +291,7 @@ ggplot(data = quality_added_data) +
     geom_point(mapping = aes(x = ss, y = log(coli), color = region), size=1.5, alpha = 0.5) +
      labs(
       title = "Suspended Solids and Coliform Bacteria Concentration by Neighborhood, 1996-2022",
-      subtitle = "Source: Water Resource Management Information System of South Korea (http://www.wamis.go.kr/wke/wke_wqbase_lst.do)", 
+      subtitle = "Source: Water Resource Management Information System of South Korea (https://data.seoul.go.kr/dataList/342/S/2/datasetView.do)", 
       x = "Suspended Solid Content [mg/L]",
       y = "log(Coliform [MPN/100mL])"
           ) +
